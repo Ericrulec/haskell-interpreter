@@ -1,4 +1,4 @@
-# Haskell Interpreter in Go
+<div align="middle"> # Haskell Interpreter in Go </div>
 
 An experimental haskell interpreter written in Go for learning purposes. The interpreter does not include complex haskell flowcharts like Monads, or other excruciatingly difficult to implement parts of haskell.
 
