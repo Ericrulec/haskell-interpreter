@@ -6,13 +6,13 @@ An experimental haskell interpreter written in Go for learning purposes. The int
 
 - Token
   - [x] Common tokens
-  - [] Complex tokens like Monad
+  - [ ] Complex tokens like Monad
 - Lexer
-  - [] Create tests
+  - [ ] Create tests
 - Parser
-  - [] Create tests
+  - [ ] Create tests
 - AST
-  - [] Create tests
+  - [ ] Create tests
 
 ## Why not a parser generator?
 
