@@ -36,32 +36,66 @@ func (l *Lexer) NextToken() (tok token.Token, literal string) {
 			literal = token.ASSIGN.String()
 		}
 	case '+':
-		tok = token.PLUS
+		if l.peekChar() == '+' {
+			l.readChar()
+			tok = token.CONCAT
+			literal = token.CONCAT.String()
+		} else {
+			tok = token.PLUS
+			literal = token.PLUS.String()
+		}
 	case '-':
 		tok = token.MINUS
 	case '!':
 		if l.peekChar() == '=' {
 			l.readChar()
 			tok = token.NOT_EQ
-		} else {
+            literal = token.BANG.String()
+		} else if l.peekChar() == '!' {
+            l.readChar()
+            tok = token.BANGBANG
+            literal = token.BANGBANG.String()
+        } else {
 			tok = token.BANG
 		}
 	case '/':
 		tok = token.SLASH
 	case '*':
 		tok = token.ASTERISK
+		literal = token.ASTERISK.String()
 	case '<':
 		tok = token.LT
 	case '>':
 		tok = token.GT
 	case ';':
 		tok = token.SEMICOLON
+    case ':':
+        if l.peekChar() == ':' {
+            l.readChar()
+            tok = token.SIGNATURE
+            literal = token.SIGNATURE.String()
+        } else {
+            tok = token.COLON
+            literal = token.COLON.String()
+        }
+    case '|':
+        if l.peekChar() == '|' {
+            l.readChar()
+            tok = token.OR
+            literal = token.OR.String()
+        } else {
+            tok = token.GUARD
+            literal = token.GUARD.String()
+        }
 	case '(':
 		tok = token.LPAREN
+        literal = token.LPAREN.String()
 	case ')':
 		tok = token.RPAREN
+        literal = token.RPAREN.String()
 	case ',':
 		tok = token.COMMA
+        literal = token.COMMA.String()
 	case 0:
 		tok = token.EOF
 	default:
