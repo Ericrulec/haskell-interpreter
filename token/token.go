@@ -10,7 +10,7 @@ const (
 	ILLEGAL
 	EOF
 	COMMENT
-    EOEXP // End of Expression
+	EOEXP // End of Expression
 
 	// Types
 	STRING
@@ -22,31 +22,31 @@ const (
 	// BOOLEAN VALUES
 	TRUE
 	FALSE
-    OTHERWISE
+	OTHERWISE
 
 	// Delimiters
 	COMMA     // ,
-    COLON // :
-    SIGNATURE // ::
+	COLON     // :
+	SIGNATURE // ::
 	SEMICOLON // ;
 	LPAREN    // (
 	RPAREN    // )
 
 	// Operators
-	PLUS      // +
-	MINUS     // -
-	ASTERISK  // *
-	SLASH     // /
-	REMAINDER // %
-	BANG      // !
-    BANGBANG // !!
-	CONCAT    // ++
-    APPLY // $
-    COMPOSITION // .
-    AND // &&
-    OR // ||
+	PLUS        // +
+	MINUS       // -
+	ASTERISK    // *
+	SLASH       // /
+	REMAINDER   // %
+	BANG        // !
+	BANGBANG    // !!
+	CONCAT      // ++
+	APPLY       // $
+	COMPOSITION // .
+	AND         // &&
+	OR          // ||
 
-    // Comparison
+	// Comparison
 	EQ     // ==
 	NOT_EQ // !=
 	LT     // <
@@ -59,8 +59,8 @@ const (
 	IF
 	IN
 	ELSE
-    GUARD // |
-    THEN
+	GUARD // |
+	THEN
 
 	// Declarations
 	LET
@@ -76,49 +76,49 @@ var token2string = [...]string{
 	NULL:      "NULL",
 	INT:       "INT",
 	IDENT:     "IDENT",
-    EOEXP: "EOEXP",
+	EOEXP:     "EOEXP",
 	ASSIGN:    "=",
 	BANG:      "!",
-    BANGBANG: "!!",
+	BANGBANG:  "!!",
 	EQ:        "==",
 	NOT_EQ:    "!=",
 	LT:        "<",
 	GT:        ">",
 	COMMA:     ",",
-    COLON: ":",
-    SIGNATURE: "::",
+	COLON:     ":",
+	SIGNATURE: "::",
 	SEMICOLON: ";",
 	LPAREN:    "(",
 	RPAREN:    ")",
 	PLUS:      "+",
-    CONCAT: "++",
+	CONCAT:    "++",
 	MINUS:     "-",
 	ASTERISK:  "*",
 	SLASH:     "/",
 	REMAINDER: "%",
-    AND: "&&",
-    OR: "||",
-    GUARD: "|",
-    THEN: "then",
+	AND:       "&&",
+	OR:        "||",
+	GUARD:     "|",
+	THEN:      "then",
 	RETURN:    "return",
 	IF:        "if",
 	IN:        "in",
 	LET:       "let",
 	TRUE:      "true",
 	FALSE:     "false",
-    OTHERWISE: "true",
+	OTHERWISE: "true",
 }
 
 var keywords = map[string]Token{
-	"return": RETURN,
-	"let":    LET,
-	"true":   TRUE,
-	"false":  FALSE,
-	"if":     IF,
-	"else":   ELSE,
-	"in":     IN,
-    "then": THEN,
-    "otherwise": OTHERWISE,
+	"return":    RETURN,
+	"let":       LET,
+	"true":      TRUE,
+	"false":     FALSE,
+	"if":        IF,
+	"else":      ELSE,
+	"in":        IN,
+	"then":      THEN,
+	"otherwise": OTHERWISE,
 }
 
 func LookupIdent(ident string) Token {
