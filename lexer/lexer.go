@@ -23,8 +23,30 @@ func New(input string) *Lexer {
 func (l *Lexer) NextToken() (tok token.Token, literal string) {
 	literal = string(l.ch)
 
-	l.skipWhiteSpace()
-
+    // Check if newline into space otherwise skip whitespace
+	for {
+		switch l.ch {
+		case '\u2028', '\u2029', '\n', '\r':
+            if unicode.IsSpace(rune(l.peekChar())) {
+                l.readChar()
+                continue
+            } else {
+                tok = token.EOEXP
+                literal = token.EOEXP.String()
+                goto END // Skip over all the cases
+            }
+		case ' ', '\t', '\f', '\v', '\u00a0', '\ufeff':
+			l.readChar()
+			continue
+		}
+		if l.ch >= utf8.RuneSelf {
+			if unicode.IsSpace(l.ch) {
+				l.readChar()
+				continue
+			}
+		}
+		break
+	}
 	switch l.ch {
 	case '=':
 		if l.peekChar() == '=' {
@@ -50,12 +72,12 @@ func (l *Lexer) NextToken() (tok token.Token, literal string) {
 		if l.peekChar() == '=' {
 			l.readChar()
 			tok = token.NOT_EQ
-            literal = token.BANG.String()
+			literal = token.BANG.String()
 		} else if l.peekChar() == '!' {
-            l.readChar()
-            tok = token.BANGBANG
-            literal = token.BANGBANG.String()
-        } else {
+			l.readChar()
+			tok = token.BANGBANG
+			literal = token.BANGBANG.String()
+		} else {
 			tok = token.BANG
 		}
 	case '/':
@@ -69,33 +91,33 @@ func (l *Lexer) NextToken() (tok token.Token, literal string) {
 		tok = token.GT
 	case ';':
 		tok = token.SEMICOLON
-    case ':':
-        if l.peekChar() == ':' {
-            l.readChar()
-            tok = token.SIGNATURE
-            literal = token.SIGNATURE.String()
-        } else {
-            tok = token.COLON
-            literal = token.COLON.String()
-        }
-    case '|':
-        if l.peekChar() == '|' {
-            l.readChar()
-            tok = token.OR
-            literal = token.OR.String()
-        } else {
-            tok = token.GUARD
-            literal = token.GUARD.String()
-        }
+	case ':':
+		if l.peekChar() == ':' {
+			l.readChar()
+			tok = token.SIGNATURE
+			literal = token.SIGNATURE.String()
+		} else {
+			tok = token.COLON
+			literal = token.COLON.String()
+		}
+	case '|':
+		if l.peekChar() == '|' {
+			l.readChar()
+			tok = token.OR
+			literal = token.OR.String()
+		} else {
+			tok = token.GUARD
+			literal = token.GUARD.String()
+		}
 	case '(':
 		tok = token.LPAREN
-        literal = token.LPAREN.String()
+		literal = token.LPAREN.String()
 	case ')':
 		tok = token.RPAREN
-        literal = token.RPAREN.String()
+		literal = token.RPAREN.String()
 	case ',':
 		tok = token.COMMA
-        literal = token.COMMA.String()
+		literal = token.COMMA.String()
 	case 0:
 		tok = token.EOF
 	default:
@@ -111,6 +133,7 @@ func (l *Lexer) NextToken() (tok token.Token, literal string) {
 			tok = token.ILLEGAL
 		}
 	}
+    END: // END label skipping over char cases
 	l.readChar()
 	return tok, literal
 }
@@ -157,27 +180,3 @@ func isDigit(ch rune) bool {
 	return '0' <= ch && ch <= '9'
 }
 
-func (l *Lexer) skipWhiteSpace() {
-	for {
-		switch l.ch {
-		case ' ', '\t', '\f', '\v', '\u00a0', '\ufeff':
-			l.readChar()
-			continue
-		case '\r':
-			if l.peekChar() == '\n' {
-				l.readChar()
-			}
-			fallthrough
-		case '\u2028', '\u2029', '\n':
-			l.readChar()
-			continue
-		}
-		if l.ch >= utf8.RuneSelf {
-			if unicode.IsSpace(l.ch) {
-				l.readChar()
-				continue
-			}
-		}
-		break
-	}
-}
