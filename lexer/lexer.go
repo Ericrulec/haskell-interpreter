@@ -20,8 +20,8 @@ func New(input string) *Lexer {
 	return l
 }
 
-func (l *Lexer) NextToken() (tok token.Token, literal string) {
-	literal = string(l.ch)
+func (l *Lexer) NextToken() (tok token.Token) {
+    literal := string(l.ch)
 
     // Check if newline into space otherwise skip whitespace
 	for {
@@ -31,8 +31,8 @@ func (l *Lexer) NextToken() (tok token.Token, literal string) {
                 l.readChar()
                 continue
             } else {
-                tok = token.EOEXP
-                literal = token.EOEXP.String()
+                tok.Type= token.EOEXP
+                tok.Literal = token.EOEXP.String()
                 goto END // Skip over all the cases
             }
 		case ' ', '\t', '\f', '\v', '\u00a0', '\ufeff':
@@ -51,91 +51,96 @@ func (l *Lexer) NextToken() (tok token.Token, literal string) {
 	case '=':
 		if l.peekChar() == '=' {
 			l.readChar()
-			tok = token.EQ
-			literal = token.EQ.String()
+			tok.Type = token.EQ
+			tok.Literal = token.EQ.String()
 		} else {
-			tok = token.ASSIGN
-			literal = token.ASSIGN.String()
+			tok.Type = token.ASSIGN
+			tok.Literal = token.ASSIGN.String()
 		}
 	case '+':
 		if l.peekChar() == '+' {
 			l.readChar()
-			tok = token.CONCAT
-			literal = token.CONCAT.String()
+			tok.Type = token.CONCAT
+			tok.Literal = token.CONCAT.String()
 		} else {
-			tok = token.PLUS
-			literal = token.PLUS.String()
+			tok.Type = token.PLUS
+			tok.Literal = token.PLUS.String()
 		}
 	case '-':
-		tok = token.MINUS
+		tok.Type = token.MINUS
 	case '!':
 		if l.peekChar() == '=' {
 			l.readChar()
-			tok = token.NOT_EQ
-			literal = token.BANG.String()
+			tok.Type = token.NOT_EQ
+			tok.Literal = token.BANG.String()
 		} else if l.peekChar() == '!' {
 			l.readChar()
-			tok = token.BANGBANG
-			literal = token.BANGBANG.String()
+			tok.Type = token.BANGBANG
+			tok.Literal = token.BANGBANG.String()
 		} else {
-			tok = token.BANG
+			tok.Type = token.BANG
+            tok.Literal = token.BANG.String()
 		}
 	case '/':
-		tok = token.SLASH
+		tok.Type = token.SLASH
 	case '*':
-		tok = token.ASTERISK
+		tok.Type = token.ASTERISK
 		literal = token.ASTERISK.String()
 	case '<':
-		tok = token.LT
+		tok.Type = token.LT
 	case '>':
-		tok = token.GT
+		tok.Type = token.GT
 	case ';':
-		tok = token.SEMICOLON
+		tok.Type = token.SEMICOLON
 	case ':':
 		if l.peekChar() == ':' {
 			l.readChar()
-			tok = token.SIGNATURE
-			literal = token.SIGNATURE.String()
+			tok.Type = token.SIGNATURE
+			tok.Literal = token.SIGNATURE.String()
 		} else {
-			tok = token.COLON
-			literal = token.COLON.String()
+			tok.Type = token.COLON
+            tok.Literal = token.COLON.String()
 		}
 	case '|':
 		if l.peekChar() == '|' {
 			l.readChar()
-			tok = token.OR
-			literal = token.OR.String()
+			tok.Type = token.OR
+			tok.Literal = token.OR.String()
 		} else {
-			tok = token.GUARD
-			literal = token.GUARD.String()
+			tok.Type = token.GUARD
+			tok.Literal = token.GUARD.String()
 		}
 	case '(':
-		tok = token.LPAREN
-		literal = token.LPAREN.String()
+		tok.Type = token.LPAREN
+		tok.Literal = token.LPAREN.String()
 	case ')':
-		tok = token.RPAREN
-		literal = token.RPAREN.String()
+		tok.Type = token.RPAREN
+		tok.Literal = token.RPAREN.String()
 	case ',':
-		tok = token.COMMA
-		literal = token.COMMA.String()
+		tok.Type = token.COMMA
+		tok.Literal = token.COMMA.String()
 	case 0:
-		tok = token.EOF
+		tok.Type = token.EOF
+        tok.Literal = token.EOF.String()
 	default:
 		if isLetter(l.ch) {
 			literal = l.readIdentifier()
-			tok = token.LookupIdent(literal)
-			return tok, literal
+			tok.Type = token.LookupIdent(literal)
+            tok.Literal = literal
+			return tok
 		} else if isDigit(l.ch) {
-			tok = token.INT
+			tok.Type = token.INT
 			literal = l.readNumber()
-			return tok, literal
+            tok.Literal = literal
+			return tok
 		} else {
-			tok = token.ILLEGAL
+			tok.Type = token.ILLEGAL
+            tok.Literal = token.ILLEGAL.String()
 		}
 	}
     END: // END label skipping over char cases
 	l.readChar()
-	return tok, literal
+	return tok
 }
 
 func (l *Lexer) readIdentifier() string {

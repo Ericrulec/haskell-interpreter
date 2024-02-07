@@ -8,10 +8,9 @@ import (
 
 func TestNextToken(t *testing.T) {
 	input := `f x y = (+) x y
-g a b = a + b
-`
+g a b = a + b`
 	tests := []struct {
-		expectedType    token.Token
+		expectedType    token.Tokentype
 		expectedLiteral string
 	}{
 		{token.IDENT, "f"},
@@ -31,22 +30,22 @@ g a b = a + b
         {token.IDENT, "a"},
 		{token.PLUS, "+"},
         {token.IDENT, "b"},
-        {token.EOEXP, "EOEXP"},
+        {token.EOF, "EOF"},
 	}
 
 	l := New(input)
 
 	for i, tt := range tests {
-		tok, literal := l.NextToken()
+		tok := l.NextToken()
 
-		if tok != tt.expectedType {
+		if tok.Type != tt.expectedType {
 			t.Fatalf("tests[%d] - tokentype wrong. expected=%q, got=%q",
-				i, tt.expectedType, tok)
+				i, tt.expectedType, tok.Type)
 		}
 
-		if literal != tt.expectedLiteral {
+		if tok.Literal != tt.expectedLiteral {
 			t.Fatalf("tests[%d] - literal wrong. expected=%q, got=%s",
-				i, tt.expectedLiteral, literal)
+				i, tt.expectedLiteral, tok.Literal)
 		}
 	}
 }

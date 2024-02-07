@@ -2,10 +2,15 @@ package token
 
 import "strconv"
 
-type Token int
+type Token struct {
+    Type Tokentype
+    Literal string
+}
+
+type Tokentype int
 
 const (
-	_ Token = iota
+	_ Tokentype = iota
 
 	ILLEGAL
 	EOF
@@ -54,6 +59,7 @@ const (
 
 	// Function miscellaneous
 	RETURN
+    FUNCTION
 
 	// Basic flow
 	IF
@@ -109,7 +115,7 @@ var token2string = [...]string{
 	OTHERWISE: "true",
 }
 
-var keywords = map[string]Token{
+var keywords = map[string]Tokentype{
 	"return":    RETURN,
 	"let":       LET,
 	"true":      TRUE,
@@ -121,18 +127,18 @@ var keywords = map[string]Token{
 	"otherwise": OTHERWISE,
 }
 
-func LookupIdent(ident string) Token {
+func LookupIdent(ident string) Tokentype {
 	if tok, ok := keywords[ident]; ok {
 		return tok
 	}
 	return IDENT
 }
 
-func (tok Token) String() string {
+func (tok Tokentype) String() string {
 	switch {
 	case tok == 0:
 		return "UNKNOWN"
-	case tok < Token(len(token2string)):
+	case tok < Tokentype(len(token2string)):
 		return token2string[tok]
 	default:
 		return "token(" + strconv.Itoa(int(tok)) + ")"
