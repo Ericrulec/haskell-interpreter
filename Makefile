@@ -1,3 +1,8 @@
+# Build project
+.PHONY: build
+build:
+	@go build
+
 # Run main.go
 .PHONY: run
 run:

@@ -1,9 +1,10 @@
 package parser
 
 import (
+	"testing"
+
 	"github.com/Ericrulec/haskell-interpreter/ast"
 	"github.com/Ericrulec/haskell-interpreter/lexer"
-	"testing"
 )
 
 func TestLetStatements(t *testing.T) {
@@ -12,18 +13,18 @@ func TestLetStatements(t *testing.T) {
 		expectedIdentifier string
 		expectedValue      interface{}
 	}{
-		{"let x = 5", "x", 5},
-		{"let y = true", "y", true},
-		{"let foobar = y", "foobar", "y"},
+		{"let a = 5", "a", 5},
+		{"let b = 7", "b", 7},
 	}
 
 	for _, tt := range tests {
 		l := lexer.New(tt.input)
 		p := New(l)
 		program := p.ParseProgram()
+        checkParserErrors(t,p)
 
 		if len(program.Statements) != 1 {
-			t.Fatalf("program.Statements does not contain 1 statements. got=%d",
+			t.Fatalf("program.Statements does not contain 1 statement. got=%d",
 				len(program.Statements))
 		}
 
@@ -57,4 +58,57 @@ func testLetStatement(t *testing.T, s ast.Statement, name string) bool {
 	}
 
 	return true
+}
+
+func checkParserErrors(t *testing.T,p *Parser) {
+    errors := p.Errors()
+
+    if len(errors) == 0{
+        return
+    }
+
+    t.Errorf("parser has %d errors",len(errors))
+    for _,msg:=range errors {
+        t.Errorf("parser error: %q",msg)
+    }
+    t.FailNow()
+}
+
+func TestReturnStatements(t *testing.T) {
+	tests := []struct {
+		input              string
+		expectedIdentifier string
+		expectedValue      interface{}
+	}{
+		{"a = 1", "a", 1},
+		{"b = 1 + 1", "b", 2},
+	}
+	for _, tt := range tests {
+		l := lexer.New(tt.input)
+		p := New(l)
+		program := p.ParseProgram()
+        checkParserErrors(t,p)
+        t.Log(program)
+
+		stmt := program.Statements[0]
+		if !testReturnStatement(t, stmt, tt.expectedIdentifier) {
+			return
+		}
+        t.Errorf("Something went wrong with stmt %T",stmt)
+	}
+}
+
+func testReturnStatement(t *testing.T, s ast.Statement, name string) bool {
+    returnStmt, ok := s.(*ast.ReturnStatement)
+    if !ok {
+        t.Errorf("stmt not *ast.ReturnStatement. got=%T",s)
+        return false
+    }
+
+    if returnStmt.TokenLiteral() != name {
+        t.Errorf("returnStmt.TokenLiteral not '%s', got %q",name,returnStmt.TokenLiteral())
+        return false
+    }
+
+    return true
 }
