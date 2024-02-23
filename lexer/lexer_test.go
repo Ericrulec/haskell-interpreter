@@ -22,15 +22,15 @@ g a b = a + b`
 		{token.RPAREN, ")"},
 		{token.IDENT, "x"},
 		{token.IDENT, "y"},
-        {token.EOEXP, "EOEXP"},
-        {token.IDENT, "g"},
-        {token.IDENT, "a"},
-        {token.IDENT, "b"},
+		{token.EOEXP, "EOEXP"},
+		{token.IDENT, "g"},
+		{token.IDENT, "a"},
+		{token.IDENT, "b"},
 		{token.ASSIGN, "="},
-        {token.IDENT, "a"},
+		{token.IDENT, "a"},
 		{token.PLUS, "+"},
-        {token.IDENT, "b"},
-        {token.EOF, "EOF"},
+		{token.IDENT, "b"},
+		{token.EOF, "EOF"},
 	}
 
 	l := New(input)

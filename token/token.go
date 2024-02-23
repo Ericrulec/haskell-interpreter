@@ -3,8 +3,8 @@ package token
 import "strconv"
 
 type Token struct {
-    Type Tokentype
-    Literal string
+	Type    Tokentype
+	Literal string
 }
 
 type Tokentype int
@@ -59,7 +59,7 @@ const (
 
 	// Function miscellaneous
 	RETURN
-    FUNCTION
+	FUNCTION
 
 	// Basic flow
 	IF

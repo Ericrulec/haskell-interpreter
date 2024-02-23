@@ -1,7 +1,7 @@
 package main
 
 import (
-    "fmt"
+	"fmt"
 	"github.com/Ericrulec/haskell-interpreter/repl"
 	"os"
 )

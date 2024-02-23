@@ -21,20 +21,20 @@ func New(input string) *Lexer {
 }
 
 func (l *Lexer) NextToken() (tok token.Token) {
-    literal := string(l.ch)
+	literal := string(l.ch)
 
-    // Check if newline into space otherwise skip whitespace
+	// Check if newline into space otherwise skip whitespace
 	for {
 		switch l.ch {
 		case '\u2028', '\u2029', '\n', '\r':
-            if unicode.IsSpace(rune(l.peekChar())) {
-                l.readChar()
-                continue
-            } else {
-                tok.Type= token.EOEXP
-                tok.Literal = token.EOEXP.String()
-                goto END // Skip over all the cases
-            }
+			if unicode.IsSpace(rune(l.peekChar())) {
+				l.readChar()
+				continue
+			} else {
+				tok.Type = token.EOEXP
+				tok.Literal = token.EOEXP.String()
+				goto END // Skip over all the cases
+			}
 		case ' ', '\t', '\f', '\v', '\u00a0', '\ufeff':
 			l.readChar()
 			continue
@@ -79,7 +79,7 @@ func (l *Lexer) NextToken() (tok token.Token) {
 			tok.Literal = token.BANGBANG.String()
 		} else {
 			tok.Type = token.BANG
-            tok.Literal = token.BANG.String()
+			tok.Literal = token.BANG.String()
 		}
 	case '/':
 		tok.Type = token.SLASH
@@ -99,7 +99,7 @@ func (l *Lexer) NextToken() (tok token.Token) {
 			tok.Literal = token.SIGNATURE.String()
 		} else {
 			tok.Type = token.COLON
-            tok.Literal = token.COLON.String()
+			tok.Literal = token.COLON.String()
 		}
 	case '|':
 		if l.peekChar() == '|' {
@@ -121,24 +121,24 @@ func (l *Lexer) NextToken() (tok token.Token) {
 		tok.Literal = token.COMMA.String()
 	case 0:
 		tok.Type = token.EOF
-        tok.Literal = token.EOF.String()
+		tok.Literal = token.EOF.String()
 	default:
 		if isLetter(l.ch) {
 			literal = l.readIdentifier()
 			tok.Type = token.LookupIdent(literal)
-            tok.Literal = literal
+			tok.Literal = literal
 			return tok
 		} else if isDigit(l.ch) {
 			tok.Type = token.INT
 			literal = l.readNumber()
-            tok.Literal = literal
+			tok.Literal = literal
 			return tok
 		} else {
 			tok.Type = token.ILLEGAL
-            tok.Literal = token.ILLEGAL.String()
+			tok.Literal = token.ILLEGAL.String()
 		}
 	}
-    END: // END label skipping over char cases
+END: // END label skipping over char cases
 	l.readChar()
 	return tok
 }
@@ -184,4 +184,3 @@ func isLetter(ch rune) bool {
 func isDigit(ch rune) bool {
 	return '0' <= ch && ch <= '9'
 }
-
