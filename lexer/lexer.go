@@ -68,11 +68,12 @@ func (l *Lexer) NextToken() (tok token.Token) {
 		}
 	case '-':
 		tok.Type = token.MINUS
+		tok.Literal = token.MINUS.String()
 	case '!':
 		if l.peekChar() == '=' {
 			l.readChar()
 			tok.Type = token.NOT_EQ
-			tok.Literal = token.BANG.String()
+			tok.Literal = token.NOT_EQ.String()
 		} else if l.peekChar() == '!' {
 			l.readChar()
 			tok.Type = token.BANGBANG
@@ -83,15 +84,19 @@ func (l *Lexer) NextToken() (tok token.Token) {
 		}
 	case '/':
 		tok.Type = token.SLASH
+		tok.Literal = token.SLASH.String()
 	case '*':
 		tok.Type = token.ASTERISK
-		literal = token.ASTERISK.String()
+		tok.Literal = token.ASTERISK.String()
 	case '<':
 		tok.Type = token.LT
+		tok.Literal = token.LT.String()
 	case '>':
 		tok.Type = token.GT
+		tok.Literal = token.GT.String()
 	case ';':
 		tok.Type = token.SEMICOLON
+		tok.Literal = token.SEMICOLON.String()
 	case ':':
 		if l.peekChar() == ':' {
 			l.readChar()
