@@ -70,7 +70,7 @@ const (
 
 	// Declarations
 	LET
-	ASSIGN
+	ASSIGN // =
 )
 
 var token2string = [...]string{
