@@ -1,18 +1,17 @@
 <h1 align="middle">Haskell Interpreter in Go</h1>
 
-An experimental haskell interpreter written in Go for learning purposes. The interpreter does not include complex haskell flowcharts like Monads, or other excruciatingly difficult to implement parts of haskell.
+An experimental haskell interpreter written in Go for learning purposes. The interpreter includes a _small subset of Haskell_ and does not include complex flowcharts like Monads, or other excruciatingly difficult to implement parts of haskell.
 
 ## Task List
 
 - Token
   - [x] Common tokens
-  - [ ] Complex tokens like Monad
 - Lexer
-  - [ ] Create tests
+  - [x] Create tests
 - Parser
-  - [ ] Create tests
+  - [x] Create tests
 - AST
-  - [ ] Create tests
+  - [x] Create tests
 
 ## Why not a parser generator?
 
