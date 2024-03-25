@@ -12,10 +12,16 @@ type Lexer struct {
 	position     int  // current position in input (points to current char)
 	readPosition int  // current reading position in input (after current char)
 	ch           rune // current char under examination
+
+    EOL int // end of lines
+    FnNum int // number of functions
+}
+
+type Counter struct {
 }
 
 func New(input string) *Lexer {
-	l := &Lexer{input: input}
+	l := &Lexer{input: input,EOL: 0,FnNum: 0}
 	l.readChar()
 	return l
 }
@@ -33,6 +39,7 @@ func (l *Lexer) NextToken() (tok token.Token) {
 			} else {
 				tok.Type = token.EOEXP
 				tok.Literal = token.EOEXP.String()
+                l.EOL += 1
 				goto END // Skip over all the cases
 			}
 		case ' ', '\t', '\f', '\v', '\u00a0', '\ufeff':
@@ -132,6 +139,10 @@ func (l *Lexer) NextToken() (tok token.Token) {
 			literal = l.readIdentifier()
 			tok.Type = token.LookupIdent(literal)
 			tok.Literal = literal
+            if l.FnNum <= l.EOL {
+                tok.Type = token.FUNCTION
+                l.FnNum += 1
+            }
 			return tok
 		} else if isDigit(l.ch) {
 			tok.Type = token.INT

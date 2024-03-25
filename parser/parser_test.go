@@ -113,7 +113,7 @@ func TestBooleanExpression(t *testing.T) {
 }
 
 func TestIfExpression(t *testing.T) {
-	input := `if x < y then x`
+	input := `if x < y then x else y`
 
 	l := lexer.New(input)
 	p := New(l)
@@ -134,19 +134,15 @@ func TestIfExpression(t *testing.T) {
 	if !testInfixExpression(t, exp.Condition, "x", "<", "y") {
 		return
 	}
-	if len(exp.Consequence.Statements) != 1 {
-		t.Errorf("consequence is not 1 statements. got=%d\n", len(exp.Consequence.Statements))
-	}
-	consequence, ok := exp.Consequence.Statements[0].(*ast.ExpressionStatement)
-	if !ok {
-		t.Fatalf("Statements[0] is not ast.ExpressionStatement. got=%T", exp.Consequence.Statements[0])
-	}
-	if !testIdentifier(t, consequence.Expression, "x") {
+	if !testIdentifier(t, exp.Consequence, "x") {
 		return
 	}
 	if exp.Alternative != nil {
 		t.Errorf("exp.Alternative.Statements was not nil. got=%+v", exp.Alternative)
 	}
+    if !testIdentifier(t, exp.Alternative, "y") {
+        return
+    }
 }
 
 func TestIntegerLiteralExpression(t *testing.T) {
@@ -404,16 +400,7 @@ func TestFunctionLiteralParsing(t *testing.T) {
 	}
 	testLiteralExpression(t, function.Parameters[0], "x")
 	testLiteralExpression(t, function.Parameters[1], "y")
-	if len(function.Body.Statements) != 1 {
-		t.Fatalf("function.Body.Statements has not 1 statements. got=%d\n",
-			len(function.Body.Statements))
-	}
-	bodyStmt, ok := function.Body.Statements[0].(*ast.ExpressionStatement)
-	if !ok {
-		t.Fatalf("function body stmt is not ast.ExpressionStatement. got=%T",
-			function.Body.Statements[0])
-	}
-	testInfixExpression(t, bodyStmt.Expression, "x", "+", "y")
+	testInfixExpression(t, function.Exp, "x", "+", "y")
 }
 
 func TestFunctionParameterParsing(t *testing.T) {
@@ -421,10 +408,9 @@ func TestFunctionParameterParsing(t *testing.T) {
 		input          string
 		expectedParams []string
 	}{
-		{input: "fn =", expectedParams: []string{}},
-		{input: "fn x =", expectedParams: []string{"x"}},
-		{input: "fn x y z =", expectedParams: []string{"x", "y", "z"}},
-		{input: "fn x y z |", expectedParams: []string{"x", "y", "z"}},
+		{input: "fn = 1", expectedParams: []string{}},
+		{input: "fn x = x + 1", expectedParams: []string{"x"}},
+		{input: "fn x y z = x y z", expectedParams: []string{"x", "y", "z"}},
 	}
 	for _, tt := range tests {
 		l := lexer.New(tt.input)

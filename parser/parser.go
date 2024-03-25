@@ -62,7 +62,7 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerPrefix(token.MINUS, p.parsePrefixExpression)
 	p.registerPrefix(token.LPAREN, p.parseGroupedExpression)
 	p.registerPrefix(token.IF, p.parseIfExpression)
-	//p.registerPrefix(token.FUNCTION, p.parseFunctionalLiteral)
+	p.registerPrefix(token.FUNCTION, p.parseFunctionalLiteral)
 
 	p.infixParseFns = make(map[token.Tokentype]infixParseFn)
 	p.registerInfix(token.PLUS, p.parseInfixExpression)
@@ -238,10 +238,6 @@ func (p *Parser) parseReturnStatement() *ast.ReturnStatement {
 func (p *Parser) parseIdentifier() ast.Expression {
 	defer untrace(trace("parseIdentifier"))
 
-	if !p.peekTokenIs(token.ASSIGN) && !p.peekTokenIs(token.GUARD) {
-		return p.parseFunctionalLiteral()
-	}
-
 	return &ast.Identifier{Token: p.curToken, Value: p.curToken.Literal}
 }
 
@@ -312,44 +308,29 @@ func (p *Parser) parseIfExpression() ast.Expression {
 		return nil
 	}
 
-	exp.Consequence = p.parseBlockStatement()
+	exp.Consequence = p.parseExpression(LOWEST)
 
 	if p.peekTokenIs(token.ELSE) {
 		p.nextToken()
 
-		exp.Alternative = p.parseBlockStatement()
+		exp.Alternative = p.parseExpression(LOWEST)
 	}
 
 	return exp
 }
 
-func (p *Parser) parseBlockStatement() *ast.BlockStatement {
-	block := &ast.BlockStatement{Token: p.curToken}
-	block.Statements = []ast.Statement{}
-
-	p.nextToken()
-
-	for !p.curTokenIs(token.EOF) && !p.curTokenIs(token.EOEXP) && !p.curTokenIs(token.ELSE) {
-		stmt := p.parseStatement()
-		if stmt != nil {
-			block.Statements = append(block.Statements, stmt)
-		}
-		p.nextToken()
-	}
-	return block
-}
-
 func (p *Parser) parseFunctionalLiteral() ast.Expression {
 	defer untrace(trace("parseFunctionalLiteral"))
-	lit := &ast.FunctionLiteral{Token: p.curToken}
+	lit := &ast.FunctionLiteral{Name: p.curToken.Literal,Token: p.curToken}
 
 	lit.Parameters = p.parseFunctionParameters()
 
-	if p.curTokenIs(token.ASSIGN) || p.curTokenIs(token.GUARD) {
-		p.nextToken()
+	if !p.curTokenIs(token.ASSIGN){ 
+        msg := fmt.Sprintf("Function literal not correctly parsed, curToken=%s. want='%s'.", p.curToken.Literal,token.ASSIGN.String())
+        p.errors = append(p.errors, msg)
 	}
 
-	lit.Body = p.parseBlockStatement()
+	lit.Exp = p.parseExpression(LOWEST)
 
 	return lit
 }
@@ -358,8 +339,9 @@ func (p *Parser) parseFunctionParameters() []*ast.Identifier {
 	identifiers := []*ast.Identifier{}
 
 	for i := 0; i < 10; i++ {
-		if p.peekTokenIs(token.ASSIGN) || p.peekTokenIs(token.GUARD) {
+		if p.peekTokenIs(token.ASSIGN) || p.peekTokenIs(token.EOF) {
 			p.nextToken()
+            fmt.Printf("Function parameters: %+v", identifiers)
 			return identifiers
 		}
 
@@ -369,7 +351,7 @@ func (p *Parser) parseFunctionParameters() []*ast.Identifier {
 		identifiers = append(identifiers, ident)
 	}
 
-	msg := fmt.Sprintf("too many arguments in function, maximum 10. got=%d", len(identifiers))
+	msg := fmt.Sprintf("too many arguments in function, maximum 10. got=%+v", identifiers)
 	p.errors = append(p.errors, msg)
 	return nil
 }
