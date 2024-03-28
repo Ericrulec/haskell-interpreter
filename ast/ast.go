@@ -193,10 +193,10 @@ func (ie *IfExpression) String() string {
 }
 
 type FunctionLiteral struct {
-    Name string
+	Name       string
 	Token      token.Token
 	Parameters []*Identifier
-	Exp       Expression
+	Exp        Expression
 }
 
 func (fl *FunctionLiteral) expressionNode()      {}

@@ -1,6 +1,7 @@
 package lexer
 
 import (
+	"strings"
 	"unicode"
 	"unicode/utf8"
 
@@ -12,18 +13,31 @@ type Lexer struct {
 	position     int  // current position in input (points to current char)
 	readPosition int  // current reading position in input (after current char)
 	ch           rune // current char under examination
-
-    EOL int // end of lines
-    FnNum int // number of functions
 }
 
 type Counter struct {
 }
 
 func New(input string) *Lexer {
-	l := &Lexer{input: input,EOL: 0,FnNum: 0}
+	l := &Lexer{input: input}
 	l.readChar()
 	return l
+}
+
+func (l *Lexer) ContainsSubstr(substr string) bool {
+	howFar := len(l.input) - 1 - l.position
+	if howFar < 0 {
+		return false
+	}
+	str := l.input[l.position : l.position+howFar]
+	i := strings.Index(str, substr)
+	if i == -1 {
+		return false
+	}
+	if i+1 <= howFar && str[i+1] == '=' {
+		return false
+	}
+	return true
 }
 
 func (l *Lexer) NextToken() (tok token.Token) {
@@ -39,7 +53,6 @@ func (l *Lexer) NextToken() (tok token.Token) {
 			} else {
 				tok.Type = token.EOEXP
 				tok.Literal = token.EOEXP.String()
-                l.EOL += 1
 				goto END // Skip over all the cases
 			}
 		case ' ', '\t', '\f', '\v', '\u00a0', '\ufeff':
@@ -139,10 +152,6 @@ func (l *Lexer) NextToken() (tok token.Token) {
 			literal = l.readIdentifier()
 			tok.Type = token.LookupIdent(literal)
 			tok.Literal = literal
-            if l.FnNum <= l.EOL {
-                tok.Type = token.FUNCTION
-                l.FnNum += 1
-            }
 			return tok
 		} else if isDigit(l.ch) {
 			tok.Type = token.INT

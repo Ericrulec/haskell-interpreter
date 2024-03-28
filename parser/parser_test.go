@@ -140,9 +140,9 @@ func TestIfExpression(t *testing.T) {
 	if exp.Alternative != nil {
 		t.Errorf("exp.Alternative.Statements was not nil. got=%+v", exp.Alternative)
 	}
-    if !testIdentifier(t, exp.Alternative, "y") {
-        return
-    }
+	if !testIdentifier(t, exp.Alternative, "y") {
+		return
+	}
 }
 
 func TestIntegerLiteralExpression(t *testing.T) {
